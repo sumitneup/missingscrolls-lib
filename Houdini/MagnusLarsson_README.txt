@@ -26,3 +26,5 @@ If you want to talk, there is a Slack called ProceduralDojo where we talk, mostl
 I will open nodes once I finish everything.
 
 Have fun!
+
+PS. It's compiled for build 15.0.459
