@@ -5,7 +5,7 @@
 To compile this, you need to execute command. For this you need some data:
 - Path to **VHADCStaticLibrary.lib** file.
 - Path to **SOP_Registration.cpp** file.
-- Output path where compiled DLL file will be installed. This is optional and is required only if your DSO directory is not placed in defaults path.
+- Output path where compiled DLL file will be installed. This is optional and is required only if your DSO directory is not placed in default path.
 
 Once you have this data, you need to assemble it in one command, for example:
 ```
