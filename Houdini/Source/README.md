@@ -1,4 +1,4 @@
-1. Download and install [Visual Studio 2015 Community] (http://bfy.tw/6diT)
+1. Download and install [Visual Studio 2015 Community] (http://bfy.tw/6diT). Pick **custom** install and remember to select C++ tools to be installed.
 2. Add environment variable MSVCDir that points to VC directory that you can find inside Visual Studio 15 install directory. Example: E:/VS2015/VC
 3. Launch Houdini Command Line Tools.
 
