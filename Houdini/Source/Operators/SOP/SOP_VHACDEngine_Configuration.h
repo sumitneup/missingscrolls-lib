@@ -64,23 +64,18 @@ V-HACD ENGINE SPECIFIC DEFINES                                     |
 // inputs
 #define SOP_VHACDENGINE_OP_INPUTNAME0										"Geometry"
 // parameters
+
+#define SOP_VHACDENGINE_OP_SMALLPOLYGONS_TOLERANCE							0.000001f
+
 #define SOP_VHACDENGINE_OP_ALLOWPRMOVERRIDE_SMALLNAME						"allowparametersoverride"
 #define SOP_VHACDENGINE_OP_ALLOWPRMOVERRIDE_BIGNAME							"Allow Parameters Override"
 #define SOP_VHACDENGINE_OP_ALLOWPRMOVERRIDE_SEPARATOR_SMALLNAME				"allowparametersoverrideseparator"
 #define SOP_VHACDENGINE_OP_ALLOWOVERRIDE_HELPTEXT							"Turn on/off possibility to override parameters with primitive attributes found on incoming geometry."
-#define SOP_VHACDENGINE_OP_COLLAPSEPOLYGONS_SMALLNAME						"collapsesmallpolygons"
-#define SOP_VHACDENGINE_OP_COLLAPSEPOLYGONS_BIGNAME							"Collapse Small Polygons"
-#define SOP_VHACDENGINE_OP_COLLAPSEPOLYGONS_SEPARATOR_SMALLNAME				"collapsesmallpolygonsseparator"
-#define SOP_VHACDENGINE_OP_COLLAPSEPOLYGONS_HELPTEXT						"Collapse polygons of incoming geometry."
-#define SOP_VHACDENGINE_OP_COLLAPSEAREA_SMALLNAME							"collapsetolerance"
-#define SOP_VHACDENGINE_OP_COLLAPSEAREA_BIGNAME								"Tolerance"
-#define SOP_VHACDENGINE_OP_COLLAPSEAREA_DEFAULT								0.000001f
-#define SOP_VHACDENGINE_OP_COLLAPSEAREA_HELPTEXT							"Set area size below which polygons will be collapsed."
 
-#define SOP_VHACDENGINE_OP_PRETRIANGULATE_SMALLNAME							"pretriangulategeometry"
-#define SOP_VHACDENGINE_OP_PRETRIANGULATE_BIGNAME							"Pre-Triangulate"
-#define SOP_VHACDENGINE_OP_PRETRIANGULATE_SEPARATOR_SMALLNAME				"pretriangulategeometryseparator"
-#define SOP_VHACDENGINE_OP_PRETRIANGULATE_HELPTEXT							"Triangulate incoming geometry."
+#define SOP_VHACDENGINE_OP_POLYGONIZE_SMALLNAME								"polygonize"
+#define SOP_VHACDENGINE_OP_POLYGONIZE_BIGNAME								"Polygonize"
+#define SOP_VHACDENGINE_OP_POLYGONIZE_SEPARATOR_SMALLNAME					"polygonizeseparator"
+#define SOP_VHACDENGINE_OP_POLYGONIZE_HELPTEXT								"Convert all incoming geometry to polygons."
 
 #define SOP_VHACDENGINE_OP_DECOMPOSITIONMODE_SMALLNAME						"decompositionmode"
 #define SOP_VHACDENGINE_OP_DECOMPOSITIONMODE_BIGNAME						"Mode"

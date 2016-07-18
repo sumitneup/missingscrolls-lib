@@ -5,6 +5,8 @@
 	DO NOT MODIFY THIS FILE.
 	Doing so may break every extension that uses it as a base or utility.
 	Modify it ONLY when you know what you are doing. That means NEVER!
+
+	Methods starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	TODO! -----------------------------------------------
@@ -60,17 +62,22 @@ SOP_NAMESPACE_START()
 
 	protected:
 
-		SYS_DEPRECATED_HDK_REPLACE(15.0, the one that returns <bool>)
+		//SYS_DEPRECATED_HDK_REPLACE(15.5, the one that returns <bool>)
 		virtual auto Perform_StandardStringErrorChecking(UT_String text, SOP_ErrorCodes errortype, bool allowwhitespace = false, bool allownumeric = false, bool allowempty = false, bool warnaboutempty = false) -> OP_ERROR;
-		SYS_DEPRECATED_HDK_REPLACE(15.0, the one that returns <bool>)
+		//SYS_DEPRECATED_HDK_REPLACE(15.5, the one that returns <bool>)
 		virtual auto Perform_StandardStringErrorChecking(UT_String text, bool allowwhitespace = false, bool allownumeric = false, bool allowempty = false) -> UT_ErrorSeverity;
 
 		virtual auto Perform_StandardStringErrorChecking(UT_String text, NW_ERROR_LEVEL errorlevel = NW_ERROR_LEVEL::None, SOP_ErrorCodes errortype = SOP_ErrorCodes::SOP_ERR_BADGROUP, bool allowwhitespace = false, bool allownumeric = false, bool allowempty = false, bool warnaboutempty = false) -> bool;
-
-		virtual auto Check_EnoughPrimitives(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel = NW_ERROR_LEVEL::Warning, exint requiredprimcount = 1, UT_String& errormessage = UT_String("")) -> bool;
-		virtual auto Check_EnoughPoints(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel = NW_ERROR_LEVEL::Warning, exint requiredpointcount = 4, UT_String& errormessage = UT_String("")) -> bool;
+		
+		virtual auto Check_EnoughVertices(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel = NW_ERROR_LEVEL::Warning, exint requiredcomponentcount = 3, UT_String& errormessage = UT_String("")) -> bool;
+		virtual auto Check_EnoughPrimitives(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel = NW_ERROR_LEVEL::Warning, exint requiredcomponentcount = 1, UT_String& errormessage = UT_String("")) -> bool;
+		virtual auto Check_EnoughPoints(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel = NW_ERROR_LEVEL::Warning, exint requiredcomponentcount = 4, UT_String& errormessage = UT_String("")) -> bool;
 		virtual auto Check_NoZeroAreaPrimitives(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel = NW_ERROR_LEVEL::Warning, fpreal threshold = 0.0f) -> bool;
 		virtual auto Check_AllPrimitivesAreClosed(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel = NW_ERROR_LEVEL::Warning, UT_String& errormessage = UT_String("Polygons are not closed.")) -> bool;		
+
+	private:
+		template <NW_COMPONENT_CLASS component>
+		auto ____enough_components____(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel = NW_ERROR_LEVEL::Warning, exint requiredcomponentcount = 1, UT_String& errormessage = UT_String("")) -> bool;
 	};
 
 SOP_NAMESPACE_END

@@ -108,12 +108,8 @@ SOP_START_PARAMETERLIST()
 		UI::filterSectionSwitcher_Parameter,
 		UI::allowParametersOverrideToggle_Parameter,
 		UI::allowParametersOverrideSeparator_Parameter,
-		UI::collapseSmallPolygonsToggle_Parameter,
-		UI::collapseSmallPolygonsSeparator_Parameter,
-		UI::collapseToleranceFloat_Parameter,
-		UI::preTriangulateToggle_Parameter,
-		UI::preTriangulateSeparator_Parameter,
-	
+		UI::polygonizeToggle_Parameter,
+		UI::polygonizeSeparator_Parameter,
 
 		UI::mainSectionSwitcher_Parameter,
 		UI::modeChoiceMenu_Parameter,
@@ -204,12 +200,7 @@ SOP_OPERATOR()::updateParmsFlags()
 
 	// update parameters states
 	if (is0Connected)
-	{
-		// set collapse small polygons state
-		Get_IntPRM(this->_currentCollapseSmallPolygonsValueState, UI::collapseSmallPolygonsToggle_Parameter, this->currentTime);
-		visibilityState = this->_currentCollapseSmallPolygonsValueState ? 1 : 0;
-		changed |= setVisibleState(UI::collapseToleranceFloat_Parameter.getToken(), visibilityState);
-	
+	{	
 		// set output report state
 		Get_IntPRM(this->_currentShowReportValueState, UI::consoleReportToggle_Parameter, this->currentTime);
 		visibilityState = this->_currentShowReportValueState ? 1 : 0;
@@ -288,41 +279,64 @@ SOP_OPERATOR()::Pull_FloatPRM(GU_Detail* geometry, const PRM_Template& parameter
 	return currentFloatValue;
 }
 
-SOP_OPERATOR()::Manage_SmallPolygons(UT_AutoInterrupt progress)
+SOP_OPERATOR()::Prepare_Geometry(UT_AutoInterrupt progress)
 -> bool
 {
-	Get_IntPRM(this->_currentCollapseSmallPolygonsValueState, UI::collapseSmallPolygonsToggle_Parameter, this->currentTime);
-	if (this->_currentCollapseSmallPolygonsValueState)
+	// triangulate all...
+	this->gdp->convex();
+
+	// ... and make sure we really got only triangles
+	for (auto primIt : this->gdp->getPrimitiveRange())
 	{
-		Get_FloatPRM(this->_currentCollapseAreaValueState, UI::collapseToleranceFloat_Parameter, this->currentTime);
-
-		for (auto polyIt : this->gdp->getPrimitiveRange())
+		// make sure we can escape the loop
+		if (progress.wasInterrupted())
 		{
-			// make sure we can escape the loop
-			if (progress.wasInterrupted())
+			this->addError(SOP_MESSAGE, "Operation interrupted");
+			return false;
+		}							
+		
+		auto currentPoly = (GEO_PrimPoly*) this->gdp->getGEOPrimitive(primIt);
+
+		if (currentPoly->isClosed())
+		{
+			// maybe we still got polygons with more than 3 vertices?
+			auto currentVertexCount = currentPoly->getVertexRange().getEntries();
+			if (currentVertexCount > 3)
 			{
-				this->addError(SOP_MESSAGE, "Operation interrupted");
-				return this->error();
+				this->addError(SOP_MESSAGE, "Internal triangulation failure. Polygons with 4 or more vertices detected.");
+				return false;
 			}
 
-			// TODO: This kinda works, but I don't like it.
-			auto currentPoly = (GEO_PrimPoly*) this->gdp->getGEOPrimitive(polyIt);
-			if (currentPoly->calcArea() <= this->_currentCollapseAreaValueState)
+			// collapse polygons with less than 3 vertices
+			if (currentVertexCount < 3)
 			{
-				auto polys = this->gdp->newDetachedPrimitiveGroup();
-				auto points = this->gdp->newDetachedPointGroup();
+				auto nonTriPointsGroup = this->gdp->newDetachedPointGroup();
+				nonTriPointsGroup->addRange(currentPoly->getPointRange());
 
-				points->addRange(currentPoly->getPointRange());				
-				this->gdp->fastConsolidatePoints(10.0f, points);
-
-				polys->addOffset(polyIt);				
-				this->gdp->removeZeroAreaFaces(polys);
+				// TODO: distance probably needs to be calculated per polygon, because we may have big non triangles and this will not collapse them
+				this->gdp->fastConsolidatePoints(10.0f, nonTriPointsGroup);
 			}
-		}		
-	}
-	else return Check_NoZeroAreaPrimitives(this->gdp, NW_ERROR_LEVEL::Warning);
+		}
 
-	return true;
+		// collapse zero area and really tiny polygons + kill all open polygons
+		if (currentPoly->calcArea() <= (0.0f + SOP_VHACDENGINE_OP_SMALLPOLYGONS_TOLERANCE))
+		{
+			auto polys = this->gdp->newDetachedPrimitiveGroup();
+			auto points = this->gdp->newDetachedPointGroup();
+
+			points->addRange(currentPoly->getPointRange());
+			this->gdp->fastConsolidatePoints(10.0f, points);
+
+			polys->addOffset(primIt);
+			this->gdp->removeZeroAreaFaces(polys, false);
+		}
+	}	
+
+	// is there anything left after preparation?	
+	success = Check_EnoughPrimitives(this->gdp, NW_ERROR_LEVEL::Warning, 1, UT_String("After removing zero area and open polygons there are no other primitives left."));
+	if ((success && this->error() >= UT_ERROR_WARNING) || (!success && this->error() >= UT_ERROR_NONE)) return false;
+	
+	return Check_EnoughPoints(this->gdp, NW_ERROR_LEVEL::Warning, 4, UT_String("Not enough points to create hull."));
 }
 
 SOP_OPERATOR()::Setup_VHACD()
@@ -388,56 +402,7 @@ SOP_OPERATOR()::Setup_VHACD()
 	}
 }
 
-SOP_OPERATOR()::Triangulate_Geometry(UT_AutoInterrupt progress)
--> bool
-{
-	// do we want triangulate at all?
-	Get_IntPRM(this->_currentPreTriangulateValueState, UI::preTriangulateToggle_Parameter, this->currentTime);		
-	if (this->_currentPreTriangulateValueState) this->gdp->convex();
-
-	// make sure that we have only triangles
-	auto polyIt = GA_Iterator(this->gdp->getPrimitiveRange());
-	for (polyIt; !polyIt.atEnd(); polyIt.advance())
-	{
-		// make sure we can escape the loop
-		if (progress.wasInterrupted())
-		{
-			this->addError(SOP_MESSAGE, "Operation interrupted");
-			return false;
-		}
-				
-		auto currentPoly = (GEO_PrimPoly*) this->gdp->getGEOPrimitive(*polyIt);
-
-		// is it triangle?
-		auto currentPointCount = currentPoly->getPointRange().getEntries();
-		if (currentPointCount > 3 && !this->_currentPreTriangulateValueState)
-		{
-			this->addError(SOP_MESSAGE, "Non-Triangle geometry detected.");
-			return false;
-		}
-		
-		if (currentPointCount < 3)
-		{
-			// what happens after triangulation with non-triangles
-			if (this->_currentPreTriangulateValueState)
-			{
-				auto nonTriPointsGroup = this->gdp->newDetachedPointGroup();
-				nonTriPointsGroup->addRange(currentPoly->getPointRange());						
-				
-				if (nonTriPointsGroup->entries() > 0) this->gdp->fastConsolidatePoints(10.0f, nonTriPointsGroup);
-			}
-			else
-			{
-				this->addError(SOP_MESSAGE, "Non-Triangle geometry detected.");
-				return false;
-			}
-		}
-	}
-
-	return true;
-}
-
-SOP_OPERATOR()::Store_Data(UT_AutoInterrupt progress)
+SOP_OPERATOR()::Prepare_DataForVHACD(UT_AutoInterrupt progress)
 -> bool
 {	
 	/*
@@ -608,37 +573,44 @@ SOP_OPERATOR()::cookMySop(OP_Context& context)
 	COOKMYSOP_DEFAULTS()
 		
 	if (duplicateSource(0, context) < UT_ERROR_WARNING && this->error() < UT_ERROR_WARNING) 
-	{			
-		// make sure we have proper geometry
+	{
+		// make sure we got something to work on
 		success = Check_EnoughPrimitives(this->gdp, NW_ERROR_LEVEL::Warning, 1, UT_String("Not enough primitives to create hull."));		
 		if ((success && this->error() >= UT_ERROR_WARNING) || (!success && this->error() >= UT_ERROR_NONE)) return this->error();
-				
-		// You Shall Not Pass!!! 
-		// Yeah! What Gandalf said, motherfuckers!
-		for (auto primIt : this->gdp->getPrimitiveRange())
-		{
-			// make sure we can escape the loop
-			if (progress.wasInterrupted())
-			{
-				this->addError(SOP_MESSAGE, "Operation interrupted");
-				return this->error();
-			}
 
-			// only polygons allowed
-			auto currentPrim = this->gdp->getPrimitive(primIt);
-			auto currentPrimType = currentPrim->getTypeId();
-			if (currentPrimType != GA_PRIMPOLY)
+		// do we want only polygons or do we try to convert anything to polygons?
+		Get_IntPRM(this->_polygonizeValueState, UI::polygonizeToggle_Parameter, this->currentTime);
+		if (this->_polygonizeValueState)
+		{ 
+			GEO_ConvertParms parms;			
+			this->gdp->convert(parms);			
+		}
+		else
+		{
+			for (auto primIt : this->gdp->getPrimitiveRange())
 			{
-				this->addError(SOP_MESSAGE, "Non-polygon geometry detected on input.");
-				return this->error();
+				// make sure we can escape the loop
+				if (progress.wasInterrupted())
+				{
+					this->addError(SOP_MESSAGE, "Operation interrupted");
+					return this->error();
+				}
+
+				// only polygons allowed
+				if (this->gdp->getPrimitive(primIt)->getTypeId() != GA_PRIMPOLY)
+				{
+					this->addError(SOP_MESSAGE, "Non-polygon geometry detected on input.");
+					return this->error();
+				}
 			}
-		}	
+		}
 		
+		// we need at least 4 points to get up from bed
 		success = Check_EnoughPoints(this->gdp, NW_ERROR_LEVEL::Warning, 4, UT_String("Not enough points to create hull."));
 		if ((success && this->error() >= UT_ERROR_WARNING) || (!success && this->error() >= UT_ERROR_NONE)) return this->error();
 
-		// zero area polygons and other small shit
-		success = this->Manage_SmallPolygons(progress);
+		// we should have only polygons now, but we need to make sure that they are all correct
+		success = this->Prepare_Geometry(progress);
 		if ((success && this->error() >= UT_ERROR_WARNING) || (!success && this->error() >= UT_ERROR_NONE)) return this->error();
 
 		// get parameters and logger/callback
@@ -646,17 +618,13 @@ SOP_OPERATOR()::cookMySop(OP_Context& context)
 		this->_parametersVHACD.m_logger = &this->_loggerVHACD;
 		this->_parametersVHACD.m_callback = &this->_callbackVHACD;
 
-		// prepare data
-		success = this->Triangulate_Geometry(progress);
-		if ((success && this->error() >= UT_ERROR_WARNING) || (!success && this->error() >= UT_ERROR_NONE)) return this->error();
-
-		success = this->Store_Data(progress);
-		if ((success && this->error() >= UT_ERROR_WARNING) || (!success && this->error() >= UT_ERROR_NONE)) return this->error();
-		
-		// clear gdp to make place for hulls
-		this->gdp->clear();
+		// prepare data for V-HACD
+		success = this->Prepare_DataForVHACD(progress);
+		if ((success && this->error() >= UT_ERROR_WARNING) || (!success && this->error() >= UT_ERROR_NONE)) return this->error();				
 
 		// lets make some hulls!
+		this->gdp->clear();
+
 		if (this->Generate_ConvexHulls(progress) >= UT_ERROR_WARNING && this->error() >= UT_ERROR_WARNING) return this->error();
 	}	
 

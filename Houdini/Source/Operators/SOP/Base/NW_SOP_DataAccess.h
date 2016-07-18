@@ -5,6 +5,8 @@
 	DO NOT MODIFY THIS FILE.
 	Doing so may break every extension that uses it as a base or utility.
 	Modify it ONLY when you know what you are doing. That means: NEVER!
+
+	Methods starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	TODO! -----------------------------------------------	
@@ -61,7 +63,7 @@ SOP_NAMESPACE_START()
 
 		// NW_GA_RWHandleTypeT should be of types <GA_RWHandleR, GA_RWHandleV2, GA_RWHandleV3, GA_RWHandleV4>
 		// NW_GA_AttributeOwnerT should be limited to values of <enum GA_AttributeOwner>
-		template <typename NW_GA_RWHandleTypeT, NW_GA_AttributeClass attributeclass, GA_AttributeOwner attributetype>
+		template <typename NW_GA_RWHandleTypeT, NW_ATTRIBUTE_CLASS attributeclass, GA_AttributeOwner attributetype>
 		auto ____find_attribute_of_type____(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, NW_GA_RWHandleTypeT& attributehandle, exint minsize = 1, exint maxsize = -1, NW_ERROR_LEVEL errorlevel = NW_ERROR_LEVEL::None, fpreal time = 0) -> bool;
 
 	protected:

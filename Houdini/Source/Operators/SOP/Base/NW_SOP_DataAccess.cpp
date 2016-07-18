@@ -5,6 +5,8 @@
 	DO NOT MODIFY THIS FILE.
 	Doing so may break every extension that uses it as a base or utility.
 	Modify it ONLY when you know what you are doing. That means: NEVER!
+
+	Methods starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	TODO! -----------------------------------------------
@@ -174,27 +176,27 @@ NW_SOP_OPERATOR()::Set_StringPRM(UT_String& str, const PRM_Template& parameter, 
 
 /* --------------------------------- ATTRIBUTES ------------------------------------------------------------------ */
 
-template <typename NW_GA_RWHandleTypeT, NW_GA_AttributeClass attributeclass, GA_AttributeOwner attributetype>
+template <typename NW_GA_RWHandleTypeT, NW_ATTRIBUTE_CLASS attributeclass, GA_AttributeOwner attributetype>
 NW_SOP_OPERATOR()::____find_attribute_of_type____(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, NW_GA_RWHandleTypeT& attributehandle, exint minsize /* = 1 */, exint maxsize /* = -1 */, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
 {
 	// Get attribute reference based on type
 	switch (attributeclass)
 	{
-	case GA_INTEGER_ATTRIBUTECLASS:
-		attributeref = detail->findIntTuple(attributetype, attributename, minsize, maxsize);
-		break;
+		case NW_ATTRIBUTE_CLASS::Integer:
+			{ attributeref = detail->findIntTuple(attributetype, attributename, minsize, maxsize); }
+			break;
 
-	case GA_FLOAT_ATTRIBUTECLASS:
-	case GA_VECTOR2_ATTRIBUTECLASS:
-	case GA_VECTOR3_ATTRIBUTECLASS:
-	case GA_VECTOR4_ATTRIBUTECLASS:
-		attributeref = detail->findFloatTuple(attributetype, attributename, minsize, maxsize);
-		break;
+		case NW_ATTRIBUTE_CLASS::Float:
+		case NW_ATTRIBUTE_CLASS::Vector2:
+		case NW_ATTRIBUTE_CLASS::Vector3:
+		case NW_ATTRIBUTE_CLASS::Vector4:
+			{ attributeref = detail->findFloatTuple(attributetype, attributename, minsize, maxsize); }
+			break;
 
-	case GA_STRING_ATTRIBUTECLASS:
-		attributeref = detail->findStringTuple(attributetype, attributename, minsize, maxsize);
-		break;
+		case NW_ATTRIBUTE_CLASS::String:
+			{ attributeref = detail->findStringTuple(attributetype, attributename, minsize, maxsize); }
+			break;
 	}
 
 	// Check attribute reference
@@ -204,12 +206,12 @@ NW_SOP_OPERATOR()::____find_attribute_of_type____(GU_Detail* detail, const UT_St
 	{
 		switch (errorlevel)
 		{
-		case Warning:
-			{ addWarning(SOP_ERR_INVALID_ATTRIBUTE_NAME, errorMessage.c_str()); }		
-			break;
-		case Error:
-			{ addError(SOP_ERR_INVALID_ATTRIBUTE_NAME, errorMessage.c_str()); }
-			break;		
+			case NW_ERROR_LEVEL::Warning:
+				{ addWarning(SOP_ERR_INVALID_ATTRIBUTE_NAME, errorMessage.c_str()); }		
+				break;
+			case NW_ERROR_LEVEL::Error:
+				{ addError(SOP_ERR_INVALID_ATTRIBUTE_NAME, errorMessage.c_str()); }
+				break;		
 		}
 
 		return false;
@@ -226,12 +228,12 @@ NW_SOP_OPERATOR()::____find_attribute_of_type____(GU_Detail* detail, const UT_St
 
 			switch (errorlevel)
 			{
-			case Warning:
-				{ addWarning(SOP_ERR_INVALID_ATTRIBUTE_NAME, errorMessage.c_str()); }		
-				break;
-			case Error:
-				{ addError(SOP_ERR_INVALID_ATTRIBUTE_NAME, errorMessage.c_str()); }
-				break;		
+				case NW_ERROR_LEVEL::Warning:
+					{ addWarning(SOP_ERR_INVALID_ATTRIBUTE_NAME, errorMessage.c_str()); }		
+					break;
+				case NW_ERROR_LEVEL::Error:
+					{ addError(SOP_ERR_INVALID_ATTRIBUTE_NAME, errorMessage.c_str()); }
+					break;		
 			}
 
 			return false;
@@ -245,7 +247,7 @@ NW_SOP_OPERATOR()::____find_attribute_of_type____(GU_Detail* detail, const UT_St
 
 NW_SOP_OPERATOR()::Find_IntegerPrimitiveAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleI& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleI, GA_INTEGER_ATTRIBUTECLASS, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleI, NW_ATTRIBUTE_CLASS::Integer, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_IntegerPrimitiveAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleI& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -263,7 +265,7 @@ NW_SOP_OPERATOR()::Find_IntegerPrimitiveAttribute(GU_Detail* detail, const PRM_T
 
 NW_SOP_OPERATOR()::Find_IntegerVertexAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleI& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleI, GA_INTEGER_ATTRIBUTECLASS, GA_ATTRIB_VERTEX>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleI, NW_ATTRIBUTE_CLASS::Integer, GA_ATTRIB_VERTEX>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_IntegerVertexAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleI& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -281,7 +283,7 @@ NW_SOP_OPERATOR()::Find_IntegerVertexAttribute(GU_Detail* detail, const PRM_Temp
 
 NW_SOP_OPERATOR()::Find_IntegerPointAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleI& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleI, GA_INTEGER_ATTRIBUTECLASS, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleI, NW_ATTRIBUTE_CLASS::Integer, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_IntegerPointAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleI& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -299,7 +301,7 @@ NW_SOP_OPERATOR()::Find_IntegerPointAttribute(GU_Detail* detail, const PRM_Templ
 
 NW_SOP_OPERATOR()::Find_IntegerDetailAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleI& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleI, GA_INTEGER_ATTRIBUTECLASS, GA_ATTRIB_DETAIL>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleI, NW_ATTRIBUTE_CLASS::Integer, GA_ATTRIB_DETAIL>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_IntegerDetailAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleI& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -319,7 +321,7 @@ NW_SOP_OPERATOR()::Find_IntegerDetailAttribute(GU_Detail* detail, const PRM_Temp
 
 NW_SOP_OPERATOR()::Find_FloatPrimitiveAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleR& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleR, GA_FLOAT_ATTRIBUTECLASS, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleR, NW_ATTRIBUTE_CLASS::Float, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_FloatPrimitiveAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleR& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -337,7 +339,7 @@ NW_SOP_OPERATOR()::Find_FloatPrimitiveAttribute(GU_Detail* detail, const PRM_Tem
 
 NW_SOP_OPERATOR()::Find_FloatVertexAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleR& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleR, GA_FLOAT_ATTRIBUTECLASS, GA_ATTRIB_VERTEX>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleR, NW_ATTRIBUTE_CLASS::Float, GA_ATTRIB_VERTEX>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_FloatVertexAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleR& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -355,7 +357,7 @@ NW_SOP_OPERATOR()::Find_FloatVertexAttribute(GU_Detail* detail, const PRM_Templa
 
 NW_SOP_OPERATOR()::Find_FloatPointAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleR& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleR, GA_FLOAT_ATTRIBUTECLASS, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleR, NW_ATTRIBUTE_CLASS::Float, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_FloatPointAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleR& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -373,7 +375,7 @@ NW_SOP_OPERATOR()::Find_FloatPointAttribute(GU_Detail* detail, const PRM_Templat
 
 NW_SOP_OPERATOR()::Find_FloatDetailAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleR& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleR, GA_FLOAT_ATTRIBUTECLASS, GA_ATTRIB_DETAIL>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleR, NW_ATTRIBUTE_CLASS::Float, GA_ATTRIB_DETAIL>(detail, attributename, attributeref, attributehandle, 1, 1, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_FloatDetailAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleR& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -393,7 +395,7 @@ NW_SOP_OPERATOR()::Find_FloatDetailAttribute(GU_Detail* detail, const PRM_Templa
 
 NW_SOP_OPERATOR()::Find_StringPointAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleS& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleS, GA_STRING_ATTRIBUTECLASS, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 1, -1, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleS, NW_ATTRIBUTE_CLASS::String, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 1, -1, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_StringPointAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleS& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -411,7 +413,7 @@ NW_SOP_OPERATOR()::Find_StringPointAttribute(GU_Detail* detail, const PRM_Templa
 
 NW_SOP_OPERATOR()::Find_StringPrimitiveAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleS& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleS, GA_STRING_ATTRIBUTECLASS, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 1, -1, errorlevel,time); }
+{ return ____find_attribute_of_type____<GA_RWHandleS, NW_ATTRIBUTE_CLASS::String, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 1, -1, errorlevel,time); }
 
 NW_SOP_OPERATOR()::Find_StringPrimitiveAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleS& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -431,15 +433,15 @@ NW_SOP_OPERATOR()::Find_StringPrimitiveAttribute(GU_Detail* detail, const PRM_Te
 
 NW_SOP_OPERATOR()::Find_VectorVertexAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV2& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV2, GA_VECTOR2_ATTRIBUTECLASS, GA_ATTRIB_VERTEX>(detail, attributename, attributeref, attributehandle, 2, 2, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV2, NW_ATTRIBUTE_CLASS::Vector2, GA_ATTRIB_VERTEX>(detail, attributename, attributeref, attributehandle, 2, 2, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorVertexAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV3& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV3, GA_VECTOR3_ATTRIBUTECLASS, GA_ATTRIB_VERTEX>(detail, attributename, attributeref, attributehandle, 3, 3, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV3, NW_ATTRIBUTE_CLASS::Vector3, GA_ATTRIB_VERTEX>(detail, attributename, attributeref, attributehandle, 3, 3, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorVertexAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV4& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV4, GA_VECTOR4_ATTRIBUTECLASS, GA_ATTRIB_VERTEX>(detail, attributename, attributeref, attributehandle, 4, 4, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV4, NW_ATTRIBUTE_CLASS::Vector4, GA_ATTRIB_VERTEX>(detail, attributename, attributeref, attributehandle, 4, 4, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorVertexAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleV2& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -487,15 +489,15 @@ NW_SOP_OPERATOR()::Find_VectorVertexAttribute(GU_Detail* detail, const PRM_Templ
 
 NW_SOP_OPERATOR()::Find_VectorPointAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV2& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV2, GA_VECTOR2_ATTRIBUTECLASS, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 2, 2, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV2, NW_ATTRIBUTE_CLASS::Vector2, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 2, 2, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorPointAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV3& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV3, GA_VECTOR3_ATTRIBUTECLASS, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 3, 3, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV3, NW_ATTRIBUTE_CLASS::Vector3, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 3, 3, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorPointAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV4& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV4, GA_VECTOR4_ATTRIBUTECLASS, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 4, 4, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV4, NW_ATTRIBUTE_CLASS::Vector4, GA_ATTRIB_POINT>(detail, attributename, attributeref, attributehandle, 4, 4, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorPointAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleV2& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -543,15 +545,15 @@ NW_SOP_OPERATOR()::Find_VectorPointAttribute(GU_Detail* detail, const PRM_Templa
 
 NW_SOP_OPERATOR()::Find_VectorPrimitiveAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV2& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV2, GA_VECTOR2_ATTRIBUTECLASS, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 2, 2, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV2, NW_ATTRIBUTE_CLASS::Vector2, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 2, 2, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorPrimitiveAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV3& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV3, GA_VECTOR3_ATTRIBUTECLASS, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 3, 3, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV3, NW_ATTRIBUTE_CLASS::Vector3, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 3, 3, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorPrimitiveAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV4& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV4, GA_VECTOR4_ATTRIBUTECLASS, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 4, 4, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV4, NW_ATTRIBUTE_CLASS::Vector4, GA_ATTRIB_PRIMITIVE>(detail, attributename, attributeref, attributehandle, 4, 4, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorPrimitiveAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleV2& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
@@ -599,15 +601,15 @@ NW_SOP_OPERATOR()::Find_VectorPrimitiveAttribute(GU_Detail* detail, const PRM_Te
 
 NW_SOP_OPERATOR()::Find_VectorDetailAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV2& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV2, GA_VECTOR2_ATTRIBUTECLASS, GA_ATTRIB_DETAIL>(detail, attributename, attributeref, attributehandle, 2, 2, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV2, NW_ATTRIBUTE_CLASS::Vector2, GA_ATTRIB_DETAIL>(detail, attributename, attributeref, attributehandle, 2, 2, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorDetailAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV3& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV3, GA_VECTOR3_ATTRIBUTECLASS, GA_ATTRIB_DETAIL>(detail, attributename, attributeref, attributehandle, 3, 3, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV3, NW_ATTRIBUTE_CLASS::Vector3, GA_ATTRIB_DETAIL>(detail, attributename, attributeref, attributehandle, 3, 3, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorDetailAttribute(GU_Detail* detail, const UT_String& attributename, GA_RWAttributeRef& attributeref, GA_RWHandleV4& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool
-{ return ____find_attribute_of_type____<GA_RWHandleV4, GA_VECTOR4_ATTRIBUTECLASS, GA_ATTRIB_DETAIL>(detail, attributename, attributeref, attributehandle, 4, 4, errorlevel, time); }
+{ return ____find_attribute_of_type____<GA_RWHandleV4, NW_ATTRIBUTE_CLASS::Vector4, GA_ATTRIB_DETAIL>(detail, attributename, attributeref, attributehandle, 4, 4, errorlevel, time); }
 
 NW_SOP_OPERATOR()::Find_VectorDetailAttribute(GU_Detail* detail, const PRM_Template& parameter, GA_RWAttributeRef& attributeref, GA_RWHandleV2& attributehandle, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::None */, fpreal time /* = 0 */)
 -> bool

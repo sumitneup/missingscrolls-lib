@@ -5,6 +5,8 @@
 	DO NOT MODIFY THIS FILE.
 	Doing so may break every extension that uses it as a base or utility.
 	Modify it ONLY when you know what you are doing. That means NEVER!
+
+	Methods starting and ending with '____' shouldn't be used anywhere outside of this file.
 	-----------------------------------------------------
 
 	TODO! -----------------------------------------------
@@ -50,9 +52,60 @@ DEFINES                                                            |
 #define ____unique_sop_title____		NW_SOP_ERRORCHECKING_NAME
 
 /* -----------------------------------------------------------------
-IMPLEMENTATION                                                     |
+PRIVATE IMPLEMENTATION                                             |
 ----------------------------------------------------------------- */
 
+template <NW_COMPONENT_CLASS component>
+NW_SOP_OPERATOR()::____enough_components____(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::Warning */, exint requiredcomponentcount /* = 1 */, UT_String& errormessage /* = UT_String("") */)
+-> bool
+{
+	exint			currentComponentCount;
+	UT_String		currentComponentErrorMessage;
+
+	switch (component)
+	{
+		case NW_COMPONENT_CLASS::Vertex:
+			{ 
+				currentComponentCount = geometry->getVertexRange().getEntries();
+				currentComponentErrorMessage = UT_String("Not enough vertices.");
+			}
+			break;
+
+		case NW_COMPONENT_CLASS::Point:
+			{
+				currentComponentCount = geometry->getPointRange().getEntries();
+				currentComponentErrorMessage = UT_String("Not enough points.");
+			}
+			break;
+
+		case NW_COMPONENT_CLASS::Primitive:
+			{ 
+				currentComponentCount = geometry->getPrimitiveRange().getEntries(); 
+				currentComponentErrorMessage = UT_String("Not enough points.");
+			}
+			break;
+	}
+
+	if (currentComponentCount < requiredcomponentcount)
+	{
+		switch (errorlevel)
+		{
+			case NW_ERROR_LEVEL::Warning:
+				{ this->addWarning(SOP_MESSAGE, errormessage == UT_String("") ? currentComponentErrorMessage : errormessage.c_str()); }
+				return false;
+
+			case NW_ERROR_LEVEL::Error:
+				{ this->addError(SOP_MESSAGE, errormessage == UT_String("") ? currentComponentErrorMessage : errormessage.c_str()); }
+				return false;
+		}
+	}
+
+	return true;
+}
+
+/* -----------------------------------------------------------------
+PUBLIC IMPLEMENTATION                                              |
+----------------------------------------------------------------- */
 
 NW_SOP_OPERATOR()::Perform_StandardStringErrorChecking(UT_String text, SOP_ErrorCodes errortype, bool allowwhitespace /* = false */, bool allownumeric /* = false */, bool allowempty /* = false */, bool warnaboutempty /* = false */)
 -> OP_ERROR
@@ -171,45 +224,17 @@ NW_SOP_OPERATOR()::Perform_StandardStringErrorChecking(UT_String text, NW_ERROR_
 	return true;
 }
 
-NW_SOP_OPERATOR()::Check_EnoughPrimitives(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::Warning */, exint requiredprimcount /* = 1 */, UT_String& errormessage /* = UT_String("") */)
+NW_SOP_OPERATOR()::Check_EnoughVertices(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::Warning */, exint requiredcomponentcount /* = 3 */, UT_String& errormessage /* = UT_String("") */)
 -> bool
-{	
-	if (geometry->getPrimitiveRange().getEntries() < requiredprimcount) 
-	{
-		switch (errorlevel)
-		{
-		case NW_ERROR_LEVEL::Warning:
-			{ this->addWarning(SOP_MESSAGE, errormessage == UT_String("")? UT_String("Not enough primitives."): errormessage.c_str()); }
-			return false;
+{ return ____enough_components____<NW_COMPONENT_CLASS::Vertex>(geometry, errorlevel, requiredcomponentcount, errormessage); }
 
-		case NW_ERROR_LEVEL::Error:
-			{ this->addError(SOP_MESSAGE, errormessage == UT_String("")? UT_String("Not enough primitives."): errormessage.c_str()); }
-			return false;
-		}		
-	}
-
-	return true;
-}
-
-NW_SOP_OPERATOR()::Check_EnoughPoints(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::Warning */, exint requiredpointcount /* = 4 */, UT_String& errormessage /* = UT_String("") */) 
+NW_SOP_OPERATOR()::Check_EnoughPoints(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::Warning */, exint requiredcomponentcount /* = 4 */, UT_String& errormessage /* = UT_String("") */)
 -> bool
-{
-	if (geometry->getPointRange().getEntries() < requiredpointcount)
-	{
-		switch (errorlevel)
-		{
-		case NW_ERROR_LEVEL::Warning:
-			{ this->addWarning(SOP_MESSAGE, errormessage == UT_String("")? UT_String("Not enough points."): errormessage.c_str()); }
-			return false;
+{ return ____enough_components____<NW_COMPONENT_CLASS::Point>(geometry, errorlevel, requiredcomponentcount, errormessage); }
 
-		case NW_ERROR_LEVEL::Error:
-			{ this->addError(SOP_MESSAGE, errormessage == UT_String("")? UT_String("Not enough points."): errormessage.c_str()); }
-			return false;		
-		}		
-	}
-
-	return true;
-}
+NW_SOP_OPERATOR()::Check_EnoughPrimitives(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::Warning */, exint requiredcomponentcount /* = 1 */, UT_String& errormessage /* = UT_String("") */)
+-> bool
+{ return ____enough_components____<NW_COMPONENT_CLASS::Primitive>(geometry, errorlevel, requiredcomponentcount, errormessage); }
 
 NW_SOP_OPERATOR()::Check_NoZeroAreaPrimitives(const GU_Detail* geometry, NW_ERROR_LEVEL errorlevel /* = NW_ERROR_LEVEL::Warning */, fpreal threshold /* = 0.0f */)
 -> bool

@@ -63,6 +63,7 @@ INCLUDES                                                           |
 #include <GA/GA_AttributeDict.h>
 #include <GA/GA_PrimitiveTypeId.h>
 #include <GA/GA_PrimitiveTypes.h>
+#include <GA/GA_PrimCompat.h>
 
 #include <GU/GU_Prim.h>
 #include <GU/GU_Curve.h>
@@ -86,6 +87,7 @@ INCLUDES                                                           |
 #include <GEO/GEO_AttributeHandle.h>
 #include <GEO/GEO_AttributeHandle.h>
 #include <GEO/GEO_Closure.h>
+#include <GEO/GEO_ConvertParms.h>
 
 #include <GOP/GOP_AttribListParse.h>
 

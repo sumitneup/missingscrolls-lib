@@ -101,13 +101,12 @@ SOP_NAMESPACE_START()
 		DESCRIPTION_DECLARATION()
 		PARAMETERS_VISIBILITYSTATE()
 
-		private:			
+		private:						
 			auto Pull_IntPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0) -> exint;
-			auto Pull_FloatPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0) -> fpreal;
-			auto Manage_SmallPolygons(UT_AutoInterrupt progress) -> bool;
-			auto Setup_VHACD() -> void;
-			auto Triangulate_Geometry(UT_AutoInterrupt progress) -> bool;
-			auto Store_Data(UT_AutoInterrupt progress) -> bool;
+			auto Pull_FloatPRM(GU_Detail* geometry, const PRM_Template& parameter, bool interfaceonly = false, fpreal time = 0) -> fpreal;	
+			auto Prepare_Geometry(UT_AutoInterrupt progress) -> bool;			
+			auto Setup_VHACD() -> void;			
+			auto Prepare_DataForVHACD(UT_AutoInterrupt progress) -> bool;
 			auto Generate_ConvexHulls(UT_AutoInterrupt progress) -> OP_ERROR;
 			auto Draw_ConvexHull(GU_Detail* geometry, int hullid, IVHACD::ConvexHull hull, UT_AutoInterrupt progress) -> bool;		
 
@@ -120,11 +119,9 @@ SOP_NAMESPACE_START()
 			GA_RWHandleV3						_positionHandle;			
 
 			bool								_currentAllowParametersOverrideValueState;
-			bool								_currentCollapseSmallPolygonsValueState;
-			fpreal								_currentCollapseAreaValueState;
+			bool								_polygonizeValueState;
 			bool								_currentShowReportValueState;
-			int									_currentReportModeChoiceValueState;
-			bool								_currentPreTriangulateValueState;
+			int									_currentReportModeChoiceValueState;			
 
 			VHACD_LOGGER_TITLE()				_loggerVHACD;
 			VHACD_CALLBACK_TITLE()				_callbackVHACD;

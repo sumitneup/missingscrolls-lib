@@ -39,7 +39,7 @@ REGISTRATION SPECIFIC DEFINES                                      |
 ----------------------------------------------------------------- */
 
 #define FINAL
-#define WIP
+//#define WIP
 
 /* -----------------------------------------------------------------
 INCLUDES                                                           |
@@ -59,15 +59,16 @@ INCLUDES                                                           |
 #include "SOP/SOP_Template_Operator.cpp"
 #include "SOP/SOP_ParametersTemplate_Operator.cpp"
 #include "SOP/SOP_VHACDEngine_Operator.cpp"
-
 #endif 
 
 /* --------- Below define only operators that you want to test --------- */
 
 #ifdef WIP
+#include "SOP/SOP_VHACDFilter_Operator.h"
 //#include "../WIP/Operators/SOP/SOP_AlignPoints_Operator.h"
 //#include "../WIP/Operators/SOP/SOP_PerfectCircle_Operator.h"
 #ifdef FINAL
+#include "SOP/SOP_VHACDFilter_Operator.cpp"
 //#include "../WIP/Operators/SOP/SOP_AlignPoints_Operator.cpp"
 //#include "../WIP/Operators/SOP/SOP_PerfectCircle_Operator.cpp"
 #endif 
@@ -104,28 +105,33 @@ newSopOperator(OP_OperatorTable* table)
 		SOP_TEMPLATE_SUBMENUPATH);								// tab menu path
 
 	auto sopParametersTemplate =		new OP_Operator(SOP_PARAMETERSTEMPLATE_OP_SMALLNAME, SOP_PARAMETERSTEMPLATE_OP_BIGNAME, SOP_OPERATOR_NAME(SOP_PARAMETERSTEMPLATE_NAME)::Create_Operator, SOP_OPERATOR_NAME(SOP_PARAMETERSTEMPLATE_NAME)::parametersList, 0, 1, 0, OP_FLAG_GENERATOR, 0, 1, SOP_PARAMETERSTEMPLATE_SUBMENUPATH);
-	auto sopVHACDEngine =				new OP_Operator(SOP_VHACDENGINE_OP_SMALLNAME, SOP_VHACDENGINE_OP_BIGNAME, SOP_OPERATOR_NAME(SOP_VHACDENGINE_NAME)::Create_Operator, SOP_OPERATOR_NAME(SOP_VHACDENGINE_NAME)::parametersList, 1, 1, 0, OP_FLAG_GENERATOR, 0, 1, SOP_VHACDENGINE_SUBMENUPATH);	
+	auto sopVHACDEngine =				new OP_Operator(SOP_VHACDENGINE_OP_SMALLNAME, SOP_VHACDENGINE_OP_BIGNAME, SOP_OPERATOR_NAME(SOP_VHACDENGINE_NAME)::Create_Operator, SOP_OPERATOR_NAME(SOP_VHACDENGINE_NAME)::parametersList, 1, 1, 0, OP_FLAG_GENERATOR, 0, 1, SOP_VHACDENGINE_SUBMENUPATH);		
 
 	// Adding			
 	success = table->addOperator(sopTemplate);
 	success = table->addOperator(sopParametersTemplate);
-	success = table->addOperator(sopVHACDEngine);	
-	
+	success = table->addOperator(sopVHACDEngine);		
+
 	// Hide nodes	
 	table->addOpHidden(sopTemplate->getName());
 	table->addOpHidden(sopParametersTemplate->getName());
+	//table->addOpHidden(sopVHACDEngine->getName());	
 	
 	/* --------- Below register only operators that you want to test --------- */
 	
 #ifdef WIP		
 	// Creating	
+	auto sopVHACDFilter = new OP_Operator(SOP_VHACDFILTER_OP_SMALLNAME, SOP_VHACDFILTER_OP_BIGNAME, SOP_OPERATOR_NAME(SOP_VHACDFILTER_NAME)::Create_Operator, SOP_OPERATOR_NAME(SOP_VHACDFILTER_NAME)::parametersList, 1, 1, 0, OP_FLAG_GENERATOR, 0, 1, SOP_VHACDFILTER_SUBMENUPATH);
 	//auto sopAlignPoints =				new OP_Operator(SOP_ALIGNPOINTS_OP_SMALLNAME, SOP_ALIGNPOINTS_OP_BIGNAME, SOP_OPERATOR_NAME(SOP_ALIGNPOINTS_NAME)::Create_Operator, SOP_OPERATOR_NAME(SOP_ALIGNPOINTS_NAME)::parametersList, 1, 2, 0, OP_FLAG_GENERATOR, 0, 1, SOP_ALIGNPOINTS_SUBMENUPATH);
-	//auto sopPerfectCircle =				new OP_Operator(SOP_PERFECTCIRCLE_OP_SMALLNAME, SOP_PERFECTCIRCLE_OP_BIGNAME, SOP_OPERATOR_NAME(SOP_PERFECTCIRCLE_NAME)::Create_Operator, SOP_OPERATOR_NAME(SOP_PERFECTCIRCLE_NAME)::parametersList, 1, 1, 0, OP_FLAG_GENERATOR, 0, 1, SOP_PERFECTCIRCLE_SUBMENUPATH);
+	//auto sopPerfectCircle =				new OP_Operator(SOP_PERFECTCIRCLE_OP_SMALLNAME, SOP_PERFECTCIRCLE_OP_BIGNAME, SOP_OPERATOR_NAME(SOP_PERFECTCIRCLE_NAME)::Create_Operator, SOP_OPERATOR_NAME(SOP_PERFECTCIRCLE_NAME)::parametersList, 1, 1, 0, OP_FLAG_GENERATOR, 0, 1, SOP_PERFECTCIRCLE_SUBMENUPATH);	
+
 
 	// Adding		
+	success = table->addOperator(sopVHACDFilter);
 	//success = table->addOperator(sopAlignPoints);
-	//success = table->addOperator(sopPerfectCircle);
+	//success = table->addOperator(sopPerfectCircle);	
 
 	// Hide nodes		
+	//table->addOpHidden(sopVHACDFilter->getName());
 #endif
 }

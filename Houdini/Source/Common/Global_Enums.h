@@ -38,17 +38,24 @@
 ENUMS                                                              |
 ----------------------------------------------------------------- */
 
-enum NW_GA_AttributeClass
+enum class NW_ATTRIBUTE_CLASS
 {
-	GA_INTEGER_ATTRIBUTECLASS,
-	GA_FLOAT_ATTRIBUTECLASS,
-	GA_VECTOR2_ATTRIBUTECLASS,
-	GA_VECTOR3_ATTRIBUTECLASS,
-	GA_VECTOR4_ATTRIBUTECLASS,
-	GA_STRING_ATTRIBUTECLASS
+	Integer,
+	Float,
+	Vector2,
+	Vector3,
+	Vector4,
+	String
 };
 
-enum NW_ERROR_LEVEL
+enum class NW_COMPONENT_CLASS
+{	
+	Vertex,
+	Point,
+	Primitive
+};
+
+enum class NW_ERROR_LEVEL
 {
 	None,
 	Warning,

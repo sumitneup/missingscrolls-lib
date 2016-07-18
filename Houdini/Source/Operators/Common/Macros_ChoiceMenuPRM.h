@@ -53,3 +53,42 @@ static PRM_Name varname##ChoiceMenuParm_Choices[] =\
 };\
 static auto varname##ChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, varname##ChoiceMenuParm_Choices);\
 auto varname##ChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &varname##ChoiceMenuParm_Name, 0, &varname##ChoiceMenuParm_ChoiceList, 0, 0, 0, 1, "0: Overwrite existing group, 1: Add to existing group.");
+
+#define DEFAULT_ERRORLEVEL_MENU_PRM(varname)\
+____custom_menu_n_choices_data____(SYS_TO_STRING(varname), "Error Level", varname)\
+static PRM_Name varname##ChoiceMenuParm_Choices[] =\
+{\
+	PRM_Name("0", "None"),\
+	PRM_Name("1", "Warning"),\
+	PRM_Name("1", "Error"),\
+	PRM_Name(0)\
+};\
+static auto varname##ChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, varname##ChoiceMenuParm_Choices);\
+auto varname##ChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &varname##ChoiceMenuParm_Name, 0, &varname##ChoiceMenuParm_ChoiceList, 0, 0, 0, 1, "Set error level.");
+
+#define DEFAULT_ERRORLEVEL_WITH_ATTRIBUTE_MENU_PRM(varname)\
+____custom_menu_n_choices_data____(SYS_TO_STRING(varname), "Error Level", varname)\
+static PRM_Name varname##ChoiceMenuParm_Choices[] =\
+{\
+	PRM_Name("0", "None"),\
+	PRM_Name("1", "Warning"),\
+	PRM_Name("1", "Error"),\
+	PRM_Name("1", "Attribute"),\
+	PRM_Name(0)\
+};\
+static auto varname##ChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, varname##ChoiceMenuParm_Choices);\
+auto varname##ChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &varname##ChoiceMenuParm_Name, 0, &varname##ChoiceMenuParm_ChoiceList, 0, 0, 0, 1, "Set error level.");
+
+#define DEFAULT_COMPARISION_MENU_PRM(varname)\
+____custom_menu_n_choices_data____(SYS_TO_STRING(varname), "Compare", varname)\
+static PRM_Name varname##ChoiceMenuParm_Choices[] =\
+{\
+	PRM_Name("0", "<"),\
+	PRM_Name("1", "<="),\
+	PRM_Name("1", "=="),\
+	PRM_Name("1", ">="),\
+	PRM_Name("1", ">"),\
+	PRM_Name(0)\
+};\
+static auto varname##ChoiceMenuParm_ChoiceList = PRM_ChoiceList(PRM_CHOICELIST_SINGLE, varname##ChoiceMenuParm_Choices);\
+auto varname##ChoiceMenu_Parameter = PRM_Template(PRM_ORD, 1, &varname##ChoiceMenuParm_Name, 0, &varname##ChoiceMenuParm_ChoiceList, 0, 0, 0, 1, "Set error level.");
