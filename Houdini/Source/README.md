@@ -16,5 +16,6 @@ or if you use custom DSO path:
 hcustom -l "%GITHUB_PATH%/missingscrolls-lib/Houdini/Source/ThirdParty/StaticLibraries/*.lib" "%GITHUB_PATH%/missingscrolls-lib/Houdini/Source/Operators/SOP_Registration.cpp" -i "%GITHUB_PATH%/missingscrolls-lib/Houdini/Home/dso"
 ```
 
-You can ignore all the warnings. They will be from my deprecated part of the code that I set to remind myself to take care of it.
 And remember to remove old DLL file, if you still have it under different name there.
+
+Lastly, if you need to compile it for other operating system than Windows, than you need to compile or link to [V-HACD] (https://github.com/nodeway/v-hacd) in your project. Can't help with that, but if you want to do this, I'm sure that you know what you are doing.
