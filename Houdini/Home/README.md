@@ -1,4 +1,4 @@
-Compiled for Houdini build 15.5.523.
+Compiled for Houdini build 15.5.565.
 
 To install it, copy whole content of this directory to your **$HOME/HoudiniX.XX/** directory.
 If you want to have it working for build other than the one specified on the **dso/nodeway-XX.X.XXX.dll**, or you want to have make it work on other operating systems than Windows, 
